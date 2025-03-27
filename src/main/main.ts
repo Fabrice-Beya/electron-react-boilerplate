@@ -14,6 +14,34 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import dotenv from 'dotenv';
+import fs from 'fs';
+
+let mainWindow: BrowserWindow | null = null;
+
+// Load and validate environment variables
+const loadEnvironmentVariables = () => {
+  const envPath = path.join(__dirname, '../../.env');
+  
+  if (!fs.existsSync(envPath)) {
+    console.warn('.env file not found at:', envPath);
+    return false;
+  }
+
+  // Force reload environment variables
+  dotenv.config({ path: envPath, override: true });
+
+  // Verify required environment variables
+  const requiredVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    return false;
+  }
+
+  return true;
+};
 
 class AppUpdater {
   constructor() {
@@ -23,12 +51,34 @@ class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
-
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('update-env-vars', async (event, envVars) => {
+  try {
+    // Update process.env
+    Object.entries(envVars).forEach(([key, value]) => {
+      process.env[key] = value as string;
+    });
+
+    // Create .env file content
+    const envContent = Object.entries(envVars)
+      .map(([key, value]) => `${key}="${value}"`)
+      .join('\n');
+
+    // Write to .env file
+    fs.writeFileSync(path.join(__dirname, '../../.env'), envContent);
+
+    // Update the window.env object in the renderer process
+    if (mainWindow) {
+      mainWindow.webContents.send('env-vars-updated', envVars);
+    }
+  } catch (error) {
+    console.error('Error updating environment variables:', error);
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -57,59 +107,66 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
-  if (isDebug) {
-    await installExtensions();
+  try {
+    // Load environment variables first
+    const envLoaded = loadEnvironmentVariables();
+    if (!envLoaded) {
+      console.warn('Environment variables not properly loaded. Some features may not work.');
+    }
+
+    if (isDebug) {
+      await installExtensions();
+    }
+
+    const RESOURCES_PATH = app.isPackaged
+      ? path.join(process.resourcesPath, 'assets')
+      : path.join(__dirname, '../../assets');
+
+    const getAssetPath = (...paths: string[]): string => {
+      return path.join(RESOURCES_PATH, ...paths);
+    };
+
+    // Create window
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: 1024,
+      height: 728,
+      icon: getAssetPath('icon_inverted.png'),
+      webPreferences: {
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+        contextIsolation: true,
+        nodeIntegration: false,
+      },
+    });
+
+    // Load the app
+    await mainWindow.loadURL(resolveHtmlPath('index.html'));
+
+    // Show window when ready
+    mainWindow.show();
+    mainWindow.focus();
+
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
+
+    const menuBuilder = new MenuBuilder(mainWindow);
+    menuBuilder.buildMenu();
+
+    // Open urls in the user's browser
+    mainWindow.webContents.setWindowOpenHandler((edata) => {
+      shell.openExternal(edata.url);
+      return { action: 'deny' };
+    });
+
+    // Remove this if your app does not use auto updates
+    new AppUpdater();
+  } catch (error) {
+    console.error('Error creating window:', error);
+    throw error;
   }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
-
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
-    icon: getAssetPath('icon.png'),
-    webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-  });
-
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
-
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
-    } else {
-      mainWindow.show();
-    }
-  });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
-
-  // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
-    shell.openExternal(edata.url);
-    return { action: 'deny' };
-  });
-
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
 };
 
 /**

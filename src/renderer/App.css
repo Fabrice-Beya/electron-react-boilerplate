@@ -2,51 +2,93 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 217 28% 15%;
+    --foreground: 0 0% 100%;
+    --card: 217 28% 15%;
+    --card-foreground: 0 0% 100%;
+    --popover: 217 28% 15%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 262 83% 74%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 16% 45%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 16% 45%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 262 83% 74%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 28% 15%;
+    --input: 217 28% 15%;
+    --ring: 262 83% 74%;
+    --radius: 1.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-[#1a1f2c] text-white;
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+}
+
 body {
   position: relative;
   color: white;
-  height: 100vh;
-  background: linear-gradient(
-    200.96deg,
-    #fedc2a -29.09%,
-    #dd5789 51.77%,
-    #7a2c9e 129.35%
-  );
+  background: #111827;
   font-family: sans-serif;
-  overflow-y: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Remove default button styles */
 button {
-  background-color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  appearance: none;
-  font-size: 1.3rem;
-  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
-    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
-  transition: all ease-in 0.1s;
-  cursor: pointer;
-  opacity: 0.9;
+  all: unset;
 }
 
-button:hover {
-  transform: scale(1.05);
-  opacity: 1;
-}
-
-li {
-  list-style: none;
-}
-
+/* Basic reset styles */
 a {
   text-decoration: none;
-  height: fit-content;
-  width: fit-content;
-  margin: 10px;
+  color: inherit;
+}
+
+ul, li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 a:hover {
