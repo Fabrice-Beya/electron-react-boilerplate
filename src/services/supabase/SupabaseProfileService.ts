@@ -1,13 +1,18 @@
-import { Profile } from "@/types";
+import { Profile } from "../../types";
 import { IProfileService } from '../interfaces/IProfileService';
 import { SupabaseClientWrapper } from './SupabaseClient';
 
 export class SupabaseProfileService implements IProfileService {
-  private supabase = SupabaseClientWrapper.getInstance().getClient();
+  private clientWrapper: SupabaseClientWrapper;
+
+  constructor() {
+    this.clientWrapper = SupabaseClientWrapper.getInstance();
+  }
 
   async getProfile(userId: string) {
     try {
-      const { data, error } = await this.supabase
+      const client = await this.clientWrapper.getClient();
+      const { data, error } = await client
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -15,16 +20,15 @@ export class SupabaseProfileService implements IProfileService {
       
       if (error) throw error;
       
-      console.log(data);
       return {
         $id: data.id,
         userId: data.id,
-        fullName: data.fullName,
-        username: data.username,
-        avatar_url: data.avatar_url,
-        website: data.website,
-        $createdAt: data.createdAt,
-        $updatedAt: data.updatedAt
+        fullName: data.full_name || '',
+        username: data.username || '',
+        avatar_url: data.avatar_url || '',
+        website: data.website || '',
+        $createdAt: data.created_at || '',
+        $updatedAt: data.updated_at || ''
       };
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -34,13 +38,14 @@ export class SupabaseProfileService implements IProfileService {
 
   async createProfile(profile: Profile) {
     try {
-      const { data, error } = await this.supabase
+      const client = await this.clientWrapper.getClient();
+      const { data, error } = await client
         .from('profiles')
         .insert({
           id: profile.userId,
-          fullName: profile.fullName,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          full_name: profile.fullName,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
         .select()
         .single();
@@ -50,9 +55,12 @@ export class SupabaseProfileService implements IProfileService {
       return {
         $id: data.id,
         userId: data.id,
-        fullName: data.fullName,
-        $createdAt: data.createdAt,
-        $updatedAt: data.updatedAt
+        fullName: data.full_name || '',
+        username: data.username || '',
+        avatar_url: data.avatar_url || '',
+        website: data.website || '',
+        $createdAt: data.created_at || '',
+        $updatedAt: data.updated_at || ''
       };
     } catch (error) {
       console.error("Error creating profile:", error);
@@ -62,14 +70,15 @@ export class SupabaseProfileService implements IProfileService {
 
   async updateProfile(profile: Profile) {
     try {
-      const { data, error } = await this.supabase
+      const client = await this.clientWrapper.getClient();
+      const { data, error } = await client
         .from('profiles')
         .update({
-          fullName: profile.fullName,
+          full_name: profile.fullName,
           username: profile.username,
           avatar_url: profile.avatar_url,
           website: profile.website,
-          updatedAt: new Date().toISOString()
+          updated_at: new Date().toISOString()
         })
         .eq('id', profile.userId)
         .select()
@@ -80,12 +89,12 @@ export class SupabaseProfileService implements IProfileService {
       return {
         $id: data.id,
         userId: data.id,
-        fullName: data.fullName,
-        username: data.username,
-        avatar_url: data.avatar_url,
-        website: data.website,
-        $createdAt: data.createdAt,
-        $updatedAt: data.updatedAt
+        fullName: data.full_name || '',
+        username: data.username || '',
+        avatar_url: data.avatar_url || '',
+        website: data.website || '',
+        $createdAt: data.created_at || '',
+        $updatedAt: data.updated_at || ''
       };
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -95,7 +104,8 @@ export class SupabaseProfileService implements IProfileService {
 
   async deleteProfile(userId: string) {
     try {
-      const { error } = await this.supabase
+      const client = await this.clientWrapper.getClient();
+      const { error } = await client
         .from('profiles')
         .delete()
         .eq('id', userId);

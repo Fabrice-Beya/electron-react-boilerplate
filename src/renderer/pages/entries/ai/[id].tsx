@@ -163,6 +163,7 @@ const EntryAIScreen = () => {
           {
             temperature: 0.7,
             provider: 'ollama',
+            model: 'gemma3:4b',
             saveConversation: true,
             contextType: 'entry',
             contextReference: id as string,

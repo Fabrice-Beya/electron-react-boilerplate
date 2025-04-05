@@ -108,6 +108,7 @@ const AIScreen = () => {
       } else {
         result = await aiService.newChat(prompt, {
           provider: 'ollama',
+          model: 'gemma3:4b',
           saveConversation: true
         });
       }

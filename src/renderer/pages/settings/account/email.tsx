@@ -22,10 +22,12 @@ const ChangeEmailPage = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-  const authService = ServiceFactory.getAuthService();
+  const authService = ServiceFactory.getInstance().getAuthService();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     setError(null);
     setSuccess(false);
     setLoading(true);
@@ -46,6 +48,14 @@ const ChangeEmailPage = () => {
     }
   };
 
+  if (!user) {
+    return (
+      <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
+        <Alert severity="error">User not authenticated</Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
@@ -60,7 +70,7 @@ const ChangeEmailPage = () => {
       <Paper sx={{ p: 3 }}>
         <Box component="form" onSubmit={handleSubmit}>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            Current email: {user?.email}
+            Current email: {user.email}
           </Typography>
 
           {error && (
@@ -71,7 +81,7 @@ const ChangeEmailPage = () => {
 
           {success && (
             <Alert severity="success" sx={{ mb: 3 }}>
-              Email updated successfully
+              Email updated successfully. Please check your new email for verification.
             </Alert>
           )}
 
@@ -109,7 +119,7 @@ const ChangeEmailPage = () => {
             <Button
               type="submit"
               variant="contained"
-              disabled={loading || !newEmail || !password}
+              disabled={loading || !newEmail || !password || newEmail === user.email}
             >
               {loading ? 'Updating...' : 'Update Email'}
             </Button>

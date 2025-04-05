@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -12,23 +12,77 @@ import {
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthContext';
+import { ServiceFactory } from '../../../../../services/ServiceFactory';
 
 const ProfileSettingsPage = () => {
-  const { user, updateProfile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState(user?.user_metadata?.name || '');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const profileService = ServiceFactory.getInstance().getProfileService();
+  const authService = ServiceFactory.getInstance().getAuthService();
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const profile = await profileService.getProfile(user.id);
+      setName(profile.fullName || user.user_metadata?.name || '');
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      // If profile doesn't exist, use name from user metadata
+      setName(user.user_metadata?.name || '');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      await updateProfile({ name });
+      // Update auth user metadata
+      const authResponse = await authService.updateUserName(name);
+      if (!authResponse.success) {
+        throw new Error(authResponse.error || 'Failed to update user name');
+      }
+
+      // Update or create profile
+      try {
+        await profileService.updateProfile({
+          id: user.id,
+          userId: user.id,
+          fullName: name,
+          username: '',
+          avatar_url: '',
+          website: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      } catch (err) {
+        // If profile doesn't exist, create it
+        await profileService.createProfile({
+          id: user.id,
+          userId: user.id,
+          fullName: name,
+          username: '',
+          avatar_url: '',
+          website: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      }
+
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
@@ -36,6 +90,14 @@ const ProfileSettingsPage = () => {
       setLoading(false);
     }
   };
+
+  if (!user) {
+    return (
+      <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
+        <Alert severity="error">User not authenticated</Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
@@ -94,7 +156,7 @@ const ProfileSettingsPage = () => {
           <Button
             type="submit"
             variant="contained"
-            disabled={loading || !name.trim() || name === user?.user_metadata?.name}
+            disabled={loading || !name.trim() || name === user.user_metadata?.name}
           >
             {loading ? (
               <CircularProgress size={24} color="inherit" />

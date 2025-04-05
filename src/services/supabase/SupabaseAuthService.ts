@@ -131,8 +131,7 @@ export class SupabaseAuthService implements IAuthService {
     try {
       const client = await this.clientWrapper.getClient();
       const { error } = await client.auth.updateUser({
-        email,
-        password
+        email
       });
       if (error) throw error;
       return { success: true, error: null };

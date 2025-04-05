@@ -129,5 +129,7 @@ export interface UserCredentials {
     name?: string;
     createdAt: string;
     updatedAt: string;
-    // Add other user properties as needed
+    user_metadata?: {
+      name?: string;
+    };
   }

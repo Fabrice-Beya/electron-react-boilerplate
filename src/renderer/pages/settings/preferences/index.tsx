@@ -115,12 +115,7 @@ const PreferencesPage = () => {
         </FormControl>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
-            label="Backend Provider"
-            value={envVars.BACKEND_PROVIDER}
-            onChange={handleEnvVarChange('BACKEND_PROVIDER')}
-            fullWidth
-          />
+          
           <TextField
             label="DeepSeek API URL"
             value={envVars.LLM_API_URL_DEEPSEEK}
@@ -152,25 +147,7 @@ const PreferencesPage = () => {
             onChange={handleEnvVarChange('LLM_API_URL_OLLAMA')}
             fullWidth
           />
-          <TextField
-            label="Ollama API Key"
-            value={envVars.LLM_API_KEY_OLLAMA}
-            onChange={handleEnvVarChange('LLM_API_KEY_OLLAMA')}
-            fullWidth
-            type={showKeys.LLM_API_KEY_OLLAMA ? 'text' : 'password'}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => toggleKeyVisibility('LLM_API_KEY_OLLAMA')}
-                    edge="end"
-                  >
-                    {showKeys.LLM_API_KEY_OLLAMA ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+         
         </Box>
 
         {error && (

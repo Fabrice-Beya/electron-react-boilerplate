@@ -13,6 +13,7 @@ import {
   Mic as MicIcon,
   Close as CloseIcon,
   Check as CheckIcon,
+  Upload as UploadIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
@@ -21,6 +22,7 @@ import { globalState } from '..';
 import { VoiceNote } from '../../../../types';
 import VoiceNotePlayer from '../../../components/VoiceNotePlayer';
 import VoiceNoteRecorder from '../../../components/VoiceNoteRecorder';
+import VoiceNoteImporter from '../../../components/VoiceNoteImporter';
 import { v4 as uuidv4 } from 'uuid';
 
 const CreateEntryPage = () => {
@@ -30,7 +32,9 @@ const CreateEntryPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showRecorder, setShowRecorder] = useState(false);
+  const [showImporter, setShowImporter] = useState(false);
   const [voiceNotes, setVoiceNotes] = useState<VoiceNote[]>([]);
+  const [transcribing, setTranscribing] = useState<number | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -338,19 +342,34 @@ const CreateEntryPage = () => {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
             <Typography variant="h6" sx={{ color: 'text.primary' }}>Voice Notes</Typography>
-            <Button
-              startIcon={<MicIcon />}
-              onClick={() => setShowRecorder(true)}
-              disabled={loading}
-              sx={{
-                color: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'rgba(144, 202, 249, 0.08)'
-                }
-              }}
-            >
-              Record Voice Note
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                startIcon={<MicIcon />}
+                onClick={() => setShowRecorder(true)}
+                disabled={loading}
+                sx={{
+                  color: 'primary.main',
+                  '&:hover': {
+                    backgroundColor: 'rgba(144, 202, 249, 0.08)'
+                  }
+                }}
+              >
+                Record
+              </Button>
+              <Button
+                startIcon={<UploadIcon />}
+                onClick={() => setShowImporter(true)}
+                disabled={loading}
+                sx={{
+                  color: 'primary.main',
+                  '&:hover': {
+                    backgroundColor: 'rgba(144, 202, 249, 0.08)'
+                  }
+                }}
+              >
+                Import
+              </Button>
+            </Box>
           </Box>
 
           {voiceNotes.map((voiceNote) => (
@@ -370,6 +389,12 @@ const CreateEntryPage = () => {
       <VoiceNoteRecorder
         open={showRecorder}
         onClose={() => setShowRecorder(false)}
+        onRecordingComplete={handleRecordingComplete}
+      />
+
+      <VoiceNoteImporter
+        open={showImporter}
+        onClose={() => setShowImporter(false)}
         onRecordingComplete={handleRecordingComplete}
       />
     </Box>

@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import { ServiceFactory } from '../../../../services/ServiceFactory';
 
 const ChangePasswordPage = () => {
@@ -21,7 +22,8 @@ const ChangePasswordPage = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const authService = ServiceFactory.getAuthService();
+  const { user } = useAuth();
+  const authService = ServiceFactory.getInstance().getAuthService();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
