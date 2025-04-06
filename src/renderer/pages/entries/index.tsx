@@ -46,7 +46,6 @@ const EntriesPage = () => {
   const loadEntries = useCallback(async (force = false) => {
     const now = Date.now();
     if (!force && now - lastLoadTime.current < 2000) {
-      console.log("Skipping load - too soon since last load");
       setLoading(false);
       return;
     }
@@ -60,13 +59,11 @@ const EntriesPage = () => {
         return;
       }
       
-      console.log("Loading entries for user:", user.id);
       const { data, error } = await entriesService.getEntries(user.id);
       
       if (error) {
         setError(error.message);
       } else {
-        console.log(`Loaded ${data.length} entries`);
         setEntries(data);
         setFilteredEntries(data);
         lastLoadTime.current = now;

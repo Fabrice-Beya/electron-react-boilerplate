@@ -15,11 +15,6 @@ export class SupabaseDatabaseService implements IDatabaseService {
         .from(collectionId)
         .select('*');
       
-      // Apply filters if any
-      // This is a simplified implementation - you'd need to map Appwrite queries to Supabase format
-      if (queries && queries.length > 0) {
-        console.log('Queries not fully implemented for Supabase yet', queries);
-      }
       
       // Execute the query
       const { data, error } = await query;

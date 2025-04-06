@@ -29,15 +29,13 @@ contextBridge.exposeInMainWorld('electron', electronHandler);
 // Initialize environment variables
 const initializeEnv = () => {
   const envVars = {
-    SUPABASE_URL: process.env.SUPABASE_URL || '',
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || '',
-    SUPABASE_BUCKET_NAME: process.env.SUPABASE_BUCKET_NAME || 'voicenotes',
-    BACKEND_PROVIDER: process.env.BACKEND_PROVIDER || 'supabase',
-    LLM_API_URL_DEEPSEEK: process.env.LLM_API_URL_DEEPSEEK || '',
-    LLM_API_KEY_DEEPSEEK: process.env.LLM_API_KEY_DEEPSEEK || '',
-    LLM_API_URL_OLLAMA: process.env.LLM_API_URL_OLLAMA || '',
-    LLM_API_KEY_OLLAMA: process.env.LLM_API_KEY_OLLAMA || '',
-    DEFAULT_AI_PROVIDER: process.env.DEFAULT_AI_PROVIDER || 'deepseek',
+    SUPABASE_URL: 'http://100.101.151.91:8003',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzQxNzMwNDAwLAogICJleHAiOiAxODk5NDk2ODAwCn0.FbSu9tAmN1azLAVjxqBaW1UATMLCo5E7xcdUw-_CRME',
+    BACKEND_PROVIDER: 'supabase',
+    LLM_API_URL_DEEPSEEK: 'https://api.deepseek.com/v1',
+    LLM_API_KEY_DEEPSEEK: 'sk-c68ec96d7dd947fd974ad1d212c47f36',
+    LLM_API_URL_OLLAMA: 'http://100.101.151.91:11434',
+    DEFAULT_AI_PROVIDER: 'ollama',
   };
 
   // Expose environment variables to renderer process

@@ -2,20 +2,12 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Get Supabase URL from environment
 const getSupabaseUrl = (): string => {
-  const configuredUrl = window.env?.SUPABASE_URL;
-  if (!configuredUrl) {
-    throw new Error('Supabase URL not configured');
-  }
-  return configuredUrl;
+  return 'http://100.101.151.91:8003'
 };
 
 // Get Supabase Anon Key from environment
 const getSupabaseAnonKey = (): string => {
-  const anonKey = window.env?.SUPABASE_ANON_KEY;
-  if (!anonKey) {
-    throw new Error('Supabase Anon Key not configured');
-  }
-  return anonKey;
+  return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzQxNzMwNDAwLAogICJleHAiOiAxODk5NDk2ODAwCn0.FbSu9tAmN1azLAVjxqBaW1UATMLCo5E7xcdUw-_CRME'
 };
 
 // Create Supabase client

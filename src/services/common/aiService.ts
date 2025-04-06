@@ -37,7 +37,7 @@ interface Entry {
 }
 
 interface EnvVars {
-  DEFAULT_AI_PROVIDER?: 'deepseek' | 'ollama';
+  DEFAULT_AI_PROVIDER?: 'ollama';
 }
 
 // Initialize OpenAI client lazily
@@ -48,9 +48,6 @@ const getOpenAIClient = (): OpenAI => {
     const { envVars } = useEnvStore.getState();
     const apiUrl = envVars.LLM_API_URL_DEEPSEEK;
     const apiKey = envVars.LLM_API_KEY_DEEPSEEK;
-
-    console.log('DeepSeek API URL:', apiUrl);
-    console.log('DeepSeek API Key:', apiKey);
 
     if (!apiUrl || !apiKey) {
       throw new Error('DeepSeek API URL or API Key not configured');
@@ -81,7 +78,7 @@ const aiService = {
     options: ChatOptions = {}
   ): Promise<ChatResponse> => {
     const { envVars } = useEnvStore.getState();
-    
+
     // Set default options
     const defaultOptions: ChatOptions = {
       model: options.provider === 'deepseek' ? "deepseek-chat" : "gemma3:12b",
@@ -173,10 +170,9 @@ When referencing specific entries, mention them by title and date. If the questi
 `;
 
       // Set context information for saving
-      console.log('window.env.DEFAULT_AI_PROVIDER', window.env.DEFAULT_AI_PROVIDER);
       const contextOptions: ChatOptions = {
         ...options,
-        provider: window.env.DEFAULT_AI_PROVIDER || 'ollama',
+        provider: 'ollama',
         saveConversation: options.saveConversation !== false, // Default to true for entry-based chats
         contextType: 'entries',
         contextReference: entry.id,
@@ -239,10 +235,9 @@ When referencing specific entries, mention them by title and date and quote the 
 `;
 
       // Set context information for saving
-      console.log('window.env.DEFAULT_AI_PROVIDER', window.env.DEFAULT_AI_PROVIDER);
       const contextOptions: ChatOptions = {
         ...options,
-        provider: window.env.DEFAULT_AI_PROVIDER || 'ollama',
+        provider: 'ollama',
         saveConversation: options.saveConversation !== false, // Default to true for entry-based chats
         contextType: 'entries',
         contextReference: entries.data.length === 1 ? entries.data[0].id : undefined,
@@ -487,9 +482,8 @@ async function chatWithOllama(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      // console.log(`Ollama attempt ${attempt}/${maxRetries}`);
 
-      const llmApiUrl = envVars.LLM_API_URL_OLLAMA;
+      const llmApiUrl = 'http://100.101.151.91:11434'
 
       if (!llmApiUrl) {
         throw new Error('Ollama API URL not configured');
@@ -561,7 +555,6 @@ async function chatWithDeepSeek(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      // console.log(`DeepSeek attempt ${attempt}/${maxRetries}`);
 
       // Get OpenAI client
       const openai = getOpenAIClient();
@@ -606,9 +599,7 @@ async function chatWithDeepSeek(
       console.error(`DeepSeek attempt ${attempt} failed:`, error);
 
       if (attempt < maxRetries) {
-        // Wait before retrying with exponential backoff
         const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
-        // console.log(`Waiting ${delay}ms before retry...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }

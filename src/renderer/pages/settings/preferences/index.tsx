@@ -39,12 +39,12 @@ const PreferencesPage = () => {
       
       // Update AI vars
       setEnvVars({
-        BACKEND_PROVIDER: newEnvVars.BACKEND_PROVIDER || '',
-        LLM_API_URL_DEEPSEEK: newEnvVars.LLM_API_URL_DEEPSEEK || '',
-        LLM_API_KEY_DEEPSEEK: newEnvVars.LLM_API_KEY_DEEPSEEK || '',
-        LLM_API_URL_OLLAMA: newEnvVars.LLM_API_URL_OLLAMA || '',
-        LLM_API_KEY_OLLAMA: newEnvVars.LLM_API_KEY_OLLAMA || '',
-        DEFAULT_AI_PROVIDER: newEnvVars.DEFAULT_AI_PROVIDER || 'deepseek',
+        BACKEND_PROVIDER: 'supabase',
+        LLM_API_URL_DEEPSEEK: 'https://api.deepseek.com',
+        LLM_API_KEY_DEEPSEEK: 'sk-c68ec96d7dd947fd974ad1d212c47f36',
+        LLM_API_URL_OLLAMA: 'http://localhost:11434',
+        LLM_API_KEY_OLLAMA: '',
+        DEFAULT_AI_PROVIDER: 'ollama',
       });
     });
 

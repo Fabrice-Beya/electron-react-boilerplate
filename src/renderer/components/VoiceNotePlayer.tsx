@@ -38,15 +38,9 @@ const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
   isTranscribing = false,
 }) => {
   // Add debug log
-  console.log('VoiceNotePlayer - Received voiceNote:', voiceNote);
 
   const [duration, setDuration] = useState<number>(() => {
     const initialDuration = parseFloat(String(voiceNote.duration));
-    console.log('VoiceNotePlayer - Parsing initial duration:', {
-      raw: voiceNote.duration,
-      parsed: initialDuration,
-      type: typeof initialDuration
-    });
     return !isNaN(initialDuration) ? initialDuration : 0;
   });
   const [isPlaying, setIsPlaying] = useState(false);
@@ -59,10 +53,7 @@ const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
 
   useEffect(() => {
     const newDuration = parseFloat(String(voiceNote.duration));
-    console.log('VoiceNotePlayer - Updating duration from prop:', {
-      raw: voiceNote.duration,
-      parsed: newDuration
-    });
+    
     if (!isNaN(newDuration)) {
       setDuration(newDuration);
     }
@@ -73,16 +64,11 @@ const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
     audioRef.current = audio;
 
     // Add debug log
-    console.log('VoiceNotePlayer - Setting up audio element');
 
     const handleLoadedMetadata = () => {
       if (audioRef.current) {
         const audioDuration = audioRef.current.duration;
-        console.log('VoiceNotePlayer - Audio metadata loaded:', {
-          audioDuration,
-          storedDuration: duration
-        });
-        
+       
         // Only use audio duration if stored duration is not available
         if (duration === 0 && typeof audioDuration === 'number' && !isNaN(audioDuration)) {
           setDuration(audioDuration);

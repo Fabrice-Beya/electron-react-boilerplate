@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "Journy",
+  "description": "A privacy centric journaling app for the desktop",
   "keywords": [
     "electron",
     "boilerplate",
@@ -110,7 +110,6 @@
     "@shadcn/ui": "^0.0.4",
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.49.1",
-    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.21",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
@@ -142,6 +141,7 @@
     "@types/react": "^19.0.11",
     "@types/react-dom": "^19.0.4",
     "@types/react-test-renderer": "^19.0.0",
+    "@types/uuid": "^10.0.0",
     "@types/webpack-bundle-analyzer": "^4.7.0",
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
@@ -196,8 +196,8 @@
     "webpack-merge": "^6.0.1"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Journy",
+    "appId": "com.journy.app",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -219,7 +219,8 @@
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
       "entitlementsInherit": "assets/entitlements.mac.plist",
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "icon": "assets/icons/app_icon.png"
     },
     "dmg": {
       "contents": [
@@ -238,13 +239,15 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "assets/icons/app_icon.png"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
-      "category": "Development"
+      "category": "Development",
+      "icon": "assets/icons/app_icon.png"
     },
     "directories": {
       "app": "release/app",

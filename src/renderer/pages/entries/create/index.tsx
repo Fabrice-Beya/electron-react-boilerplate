@@ -65,7 +65,6 @@ const CreateEntryPage = () => {
         }
 
         if (data) {
-          console.log('Draft entry created:', data);
           setEntryId(data.id);
         }
       } catch (err) {

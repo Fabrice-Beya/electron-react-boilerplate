@@ -19,24 +19,16 @@ import { SupabaseConversationsService } from './supabase/SupabaseConversationsSe
 import { SupabaseMessagesService } from './supabase/SupabaseMessagesService';
 
 // Backend types
-export type BackendProvider = 'appwrite' | 'supabase';
+export type BackendProvider = 'supabase';
 
 // Get the current backend from environment or config
 const getCurrentBackend = (): BackendProvider => {
-  // Wait for window.env to be available
-  if (typeof window === 'undefined' || !window.env) {
-    throw new Error('Environment not initialized');
-  }
-  return (window.env.BACKEND_PROVIDER as BackendProvider) || 'supabase';
+  return 'supabase';
 };
 
 // Service factory
 export class ServiceFactory {
   private static instance: ServiceFactory;
-  private authService: IAuthService | null = null;
-  private profileService: IProfileService | null = null;
-  private storageService: IStorageService | null = null;
-  private databaseService: IDatabaseService | null = null;
 
   private constructor() {}
 
@@ -52,101 +44,39 @@ export class ServiceFactory {
     ServiceFactory.getInstance();
   }
 
-  // Allow changing the backend at runtime if needed
-  static setBackend(backend: BackendProvider): void {
-    // Implementation needed
-  }
-
   public getAuthService(): IAuthService {
-    if (!this.authService) {
-      const backend = getCurrentBackend();
-      switch (backend) {
-        case 'supabase':
-          this.authService = new SupabaseAuthService();
-          break;
-        default:
-          throw new Error(`Unsupported backend: ${backend}`);
-      }
-    }
-    return this.authService;
+    return new SupabaseAuthService();
   }
 
   public getDatabaseService(): IDatabaseService {
-    if (!this.databaseService) {
-      const backend = getCurrentBackend();
-      switch (backend) {
-        case 'supabase':
-          this.databaseService = new SupabaseDatabaseService();
-          break;
-        default:
-          throw new Error(`Unsupported backend: ${backend}`);
-      }
-    }
-    return this.databaseService;
+    return new SupabaseDatabaseService();
   }
 
   public getProfileService(): IProfileService {
-    if (!this.profileService) {
-      const backend = getCurrentBackend();
-      switch (backend) {
-        case 'supabase':
-          this.profileService = new SupabaseProfileService();
-          break;
-        default:
-          throw new Error(`Unsupported backend: ${backend}`);
-      }
-    }
-    return this.profileService;
+    return new SupabaseProfileService();
   }
 
   public getStorageService(): IStorageService {
-    if (!this.storageService) {
-      const backend = getCurrentBackend();
-      switch (backend) {
-        case 'supabase':
-          this.storageService = new SupabaseStorageService();
-          break;
-        default:
-          throw new Error(`Unsupported backend: ${backend}`);
-      }
-    }
-    return this.storageService;
+    return new SupabaseStorageService();
   }
 
   static getTranscriptionService(): ITranscriptionService {
-    // Transcription service is the same regardless of backend
     return new TranscriptionService();
   }
 
   static getVoiceNoteService(): IVoiceNoteService {
-    if (getCurrentBackend() === 'appwrite') {
-      throw new Error('Appwrite voice note service not implemented yet');
-    } else {
-      return new SupabaseVoiceNoteService();
-    }
+    return new SupabaseVoiceNoteService();
   }
 
   static getEntriesService(): IEntriesService {
-    if (getCurrentBackend() === 'appwrite') {
-      throw new Error('Appwrite entries service not implemented yet');
-    } else {
-      return new SupabaseEntriesService();
-    }
+    return new SupabaseEntriesService();
   }
 
   static getConversationsService(): IConversationsService {
-    if (getCurrentBackend() === 'appwrite') {
-      throw new Error('Appwrite conversations service not implemented yet');
-    } else {
-      return new SupabaseConversationsService();
-    }
+    return new SupabaseConversationsService();
   }
 
   static getMessagesService(): IMessagesService {
-    if (getCurrentBackend() === 'appwrite') {
-      throw new Error('Appwrite messages service not implemented yet');
-    } else {
-      return new SupabaseMessagesService();
-    }
+    return new SupabaseMessagesService();
   }
 } 

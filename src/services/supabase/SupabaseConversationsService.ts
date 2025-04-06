@@ -1,4 +1,4 @@
-import { Conversation } from '@/types';
+import { Conversation } from '../../types';
 import { IConversationsService, ConversationResult, ConversationsResult, DeleteResult } from '../interfaces/IConversationsService';
 import { SupabaseClientWrapper } from './SupabaseClient';
 

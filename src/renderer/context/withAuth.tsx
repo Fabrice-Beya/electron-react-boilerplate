@@ -26,11 +26,9 @@ export function withAuth<P extends object>(
     useEffect(() => {
       // Only redirect after the initial loading is complete
       if (!loading) {
-        console.log(' user', user);
         setInitialCheckDone(true);
         // If authentication is required and user is not authenticated, redirect to auth
         if (requireAuth && (!user || (user && !user.id))) {
-          console.log(`Redirecting to ${authPath}`);
           navigate(authPath);
         }
 

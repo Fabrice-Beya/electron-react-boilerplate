@@ -1,4 +1,4 @@
-import { Message } from '@/types';
+import { Message } from '../../types';
 import { IMessagesService, MessageResult, MessagesResult, DeleteResult } from '../interfaces/IMessagesService';
 import { SupabaseClientWrapper } from './SupabaseClient';
 
@@ -263,11 +263,6 @@ export class SupabaseMessagesService implements IMessagesService {
         .from('conversations')
         .update({ updatedAt: new Date().toISOString() })
         .eq('id', conversationId);
-
-      console.log('Successfully created message exchange:', {
-        userMessage,
-        aiMessage
-      });
 
       return {
         data: [userMessage, aiMessage],

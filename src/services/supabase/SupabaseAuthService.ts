@@ -1,4 +1,3 @@
-import { AuthError, User } from '@supabase/supabase-js';
 import { IAuthService } from '../interfaces/IAuthService';
 import { AuthResponse, UserCredentials, UserData } from '../../types';
 import { SupabaseClientWrapper } from './SupabaseClient';

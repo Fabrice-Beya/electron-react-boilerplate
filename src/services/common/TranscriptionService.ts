@@ -1,7 +1,5 @@
-import { ITranscriptionService, AudioFile, TranscriptionResponse } from '../interfaces/ITranscriptionService';
-import axios from 'axios';
+import { ITranscriptionService, TranscriptionResponse } from '../interfaces/ITranscriptionService';
 import { SupabaseClientWrapper } from '../supabase/SupabaseClient';
-import { ServiceFactory } from '../ServiceFactory';
 
 export class TranscriptionService implements ITranscriptionService {
   private supabase = SupabaseClientWrapper.getInstance().getClient();
@@ -12,14 +10,12 @@ export class TranscriptionService implements ITranscriptionService {
    */
   async transcribeAudio(fileId: string): Promise<TranscriptionResponse> {
     // Call the Supabase function with the file ID
-    console.log('Calling Supabase function to transcribe file with ID:', fileId);
 
     try {
       const { data, error } = await this.supabase.functions.invoke('transcribe', {
         body: { fileId },
       });
 
-      console.log('Transcription function response:', data);
 
       if (error) {
         console.error('Transcription function error:', error);

@@ -32,18 +32,12 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
     metadata: VoiceNoteMetadata
   ): Promise<VoiceNoteResult> {
     try {
-      console.log("Starting voice note creation with metadata:", {
-        duration: metadata.duration,
-        hasTranscript: !!metadata.transcript,
-        userId: metadata.userId
-      });
       
       // Check schema
       await this.checkSchema();
       
       // Generate voice note ID
       const voiceNoteId = uuidv4();
-      console.log(`Generated voice note ID: ${voiceNoteId}`);
       
       // Determine the storage path based on user ID and entry ID (if available)
       let storagePath = `${metadata.userId}/voicenotes`;
@@ -53,10 +47,7 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
         storagePath = `${metadata.userId}/entries/${metadata.entryId}/voicenotes`;
       }
       
-      console.log(`Using storage path: ${storagePath}`);
-      
       // First upload the file
-      console.log("Preparing to upload voice note file...");
       const { fileId, error: uploadError } = await this.storageService.uploadFile({
         file: {
           uri: file.uri,
@@ -78,10 +69,8 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
         return { data: null, error: new Error('Failed to upload voice note file') };
       }
       
-      console.log(`File uploaded successfully with ID: ${fileId}`);
       
       // Create voice note record
-      console.log("Creating voice note record in database...");
       try {
         const { data, error } = await this.supabase
           .from('voicenotes')
@@ -101,17 +90,14 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
         if (error) {
           console.error("Database insert error:", error);
           // Clean up the uploaded file if record creation fails
-          console.log(`Cleaning up uploaded file ${fileId} due to insert error`);
           await this.storageService.deleteFile(fileId);
           return { data: null, error: new Error(error.message) };
         }
         
-        console.log("Voice note record created successfully:", data);
         return { data: this.mapRecordToVoiceNote(data), error: null };
       } catch (dbError) {
         console.error("Exception during database insert:", dbError);
         // Clean up the uploaded file
-        console.log(`Cleaning up uploaded file ${fileId} due to exception`);
         await this.storageService.deleteFile(fileId);
         throw dbError;
       }
@@ -298,7 +284,6 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
     entryId: string
   ): Promise<VoiceNoteResult> {
     try {
-      console.log(`Associating voice note ${voiceNoteId} with entry ${entryId}`);
       
       // First, check if the voice note exists
       const { data: voiceNote, error: getError } = await this.supabase
@@ -333,7 +318,6 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
           
           // Only move the file if the paths are different
           if (currentPath !== newPath) {
-            console.log(`Moving file from ${currentPath} to ${newPath}`);
             
             // Get the file content
             const { data: fileData } = await this.supabase.storage
@@ -394,7 +378,6 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
 
   private async checkSchema(): Promise<boolean> {
     try {
-      console.log("Checking voicenotes table schema...");
       
       // Try to get the column information
       const { data, error } = await this.supabase
@@ -406,21 +389,18 @@ export class SupabaseVoiceNoteService implements IVoiceNoteService {
         console.error("Error checking schema:", error);
         
         // Try with snake_case column names
-        console.log("Trying with snake_case column names...");
         const { error: snakeCaseError } = await this.supabase
           .from('voicenotes')
           .select('id, file_id, entry_id, user_id, created_at, updated_at')
           .limit(1);
         
         if (!snakeCaseError) {
-          console.log("Schema appears to use snake_case column names!");
           return false;
         }
         
         return false;
       }
       
-      console.log("Schema check successful, using camelCase column names");
       return true;
     } catch (error) {
       console.error("Exception checking schema:", error);

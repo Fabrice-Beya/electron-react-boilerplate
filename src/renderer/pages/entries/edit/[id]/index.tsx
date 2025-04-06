@@ -74,24 +74,14 @@ const EditEntryPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    console.log(`Updating ${name} to:`, value);
     setFormData(prev => {
       const newData = {
         ...prev,
         [name]: value,
       };
-      console.log('New form data:', newData);
       return newData;
     });
   };
-
-  useEffect(() => {
-    console.log('Form data updated:', formData);
-  }, [formData]);
-
-  useEffect(() => {
-    console.log('Entry updated:', entry);
-  }, [entry]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

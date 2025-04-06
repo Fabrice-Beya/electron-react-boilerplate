@@ -83,8 +83,6 @@ export class SupabaseEntriesService implements IEntriesService {
 
         return { data: entriesWithVoiceNotes, error: null };
       } catch (searchError) {
-        console.log("Server-side search failed, falling back to client-side search:", searchError);
-
         // Fallback to client-side search if server-side search fails
         const { data: allEntries, error: fetchError } = await this.getEntries(userId);
 
@@ -135,7 +133,6 @@ export class SupabaseEntriesService implements IEntriesService {
         return { data: null, error: new Error(error.message) };
       }
 
-      console.log("Entry created successfully:", newEntry);
 
       return {
         data: this.mapRecordToEntry(newEntry, voiceNotes),
